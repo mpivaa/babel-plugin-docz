@@ -5,15 +5,23 @@ import cp from 'child_process';
 const buildMetaInsertion = template(`
   FN_NAME.__docz = {
     jsdoc: JSDOC
-  }
+  };
 `);
 
 function parseJSDoc(filename) {
-  return JSON.parse(cp.execSync(`jsdoc -X ${filename}`));
+  try {
+    return JSON.parse(cp.execSync(`jsdoc -X ${filename}`));
+  } catch (e) {
+    return [];
+  }
 }
 
 function findDefinition(nodeName, ast) {
-  return ast.find(n => n.name === nodeName);
+  const def = ast.find(n => n.name === nodeName);
+  if (def) {
+    return def;
+  }
+  return null;
 }
 
 export default function({ types: t }) {
